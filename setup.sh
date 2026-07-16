@@ -4,7 +4,8 @@
 set -e
 
 echo "==> brew packages"
-brew install --cask ghostty font-hack-nerd-font
+[ -d /Applications/Ghostty.app ] || brew list --cask ghostty &>/dev/null || brew install --cask ghostty
+brew list --cask font-hack-nerd-font &>/dev/null || brew install --cask font-hack-nerd-font
 brew install starship fzf eza yazi zsh-autosuggestions zsh-syntax-highlighting
 
 echo "==> fzf-tab plugin"
@@ -74,6 +75,9 @@ keybind = cmd+k=clear_screen
 GHOSTTY
 
 echo "==> zshrc (appending; existing content untouched)"
+if grep -q "ported terminal experience" ~/.zshrc 2>/dev/null; then
+  echo "    already present, skipping"
+else
 cat >> ~/.zshrc <<'ZSHRC'
 
 # >>> ported terminal experience >>>
@@ -131,6 +135,7 @@ if command -v cursor >/dev/null; then
 fi
 # <<< ported terminal experience <<<
 ZSHRC
+fi
 
 echo
 echo "Done. Open Ghostty, run: claude   (or cc)"
