@@ -3,6 +3,16 @@
 # Run on the target Mac AFTER Homebrew is installed:  bash blackmac-setup.sh
 set -e
 
+# Piped/non-login shells don't read .zprofile — find brew ourselves.
+for B in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$B" ] && eval "$("$B" shellenv)" && break
+done
+command -v brew >/dev/null || { echo "Homebrew not found — install it first: https://brew.sh"; exit 1; }
+
+# Make sure future login shells see brew too.
+grep -q 'brew shellenv' ~/.zprofile 2>/dev/null || \
+  echo "eval \"\$($(command -v brew) shellenv)\"" >> ~/.zprofile
+
 echo "==> brew packages"
 [ -d /Applications/Ghostty.app ] || brew list --cask ghostty &>/dev/null || brew install --cask ghostty
 brew list --cask font-hack-nerd-font &>/dev/null || brew install --cask font-hack-nerd-font
